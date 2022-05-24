@@ -17,6 +17,7 @@ jobs:
     container:
       image: ${{ matrix.container }}
     strategy:
+      fail-fast: false
       matrix:
         container:
           - quay.io/centos/centos:stream9
