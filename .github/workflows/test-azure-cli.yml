@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         container:
-          - registry.fedoraproject.org:rawhide
+          - registry.fedoraproject.org:36
           - registry.fedoraproject.org:rawhide
     steps:
       - name: Checkout repo
