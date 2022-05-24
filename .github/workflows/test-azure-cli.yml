@@ -19,11 +19,31 @@ jobs:
     strategy:
       matrix:
         container:
+          - quay.io/centos/centos:stream9
+          - registry.fedoraproject.org/fedora:35
           - registry.fedoraproject.org/fedora:36
           - registry.fedoraproject.org/fedora:rawhide
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Test container
-        run: cat /etc/fedora-release
+      - name: Install requirements
+        run: |
+          echo "fastestmirror=1" >> /etc/dnf/dnf.conf
+          echo "max_parallel_downloads=20" >> /etc/dnf/dnf.conf
+          dnf -y upgrade
+          dnf -y install git python3 python3-pip
+          pip3 install -U wheel pip
+          
+      - name: Clone azure-cli
+        uses: actions/checkout@v3
+        with:
+          repository: azure/azure-cli
+          ref: azure-cli-2.37.0
+          path: azure-cli
+          
+      - name: Install requirements
+        run: pip3 install -r src/azure-cli/requirements.py3.Linux.txt
+        
+      - name: Install azure-cli
+        run: pip3 install src/azure-cli*/
