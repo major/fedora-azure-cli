@@ -61,20 +61,23 @@ jobs:
       - name: Run serial tests
         if: always()
         run: |
+          #!/bin/bash
+          set -euxo pipefail
+          echo $AZURE_TEST_RUN_LIVE
           azure-cli-venv/bin/python -m pytest \
             -v --boxed -p no:warnings --log-level=WARN --durations=10 \
             azure-cli/src/azure-cli/azure/cli/command_modules/network/tests/latest \
             azure-cli/src/azure-cli/azure/cli/command_modules/appservice/tests/latest \
-            azure-cli/src/azure-cli-core/azure/cli/core/tests \
             azure-cli/src/azure-cli/azure/cli/command_modules/botservice/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/cloud/tests/latest \
-            azure-cli/src/azure-cli-telemetry/azure/cli/telemetry/tests
+            azure-cli/src/azure-cli/azure/cli/command_modules/cloud/tests/latest
 
       - name: Run parallel tests
         if: always()
         run: |
+          set -euxo pipefail
+          echo $AZURE_TEST_RUN_LIVE
           azure-cli-venv/bin/python -m pytest \
-            -v --boxed -p no:warnings --log-level=WARN -n 4 --durations=10 \
+            -v --boxed -p no:warnings --log-level=WARN -n 8 --durations=10 \
             azure-cli/src/azure-cli/azure/cli/command_modules/vm/tests/latest \
             azure-cli/src/azure-cli/azure/cli/command_modules/ams/tests/latest \
             azure-cli/src/azure-cli/azure/cli/command_modules/sql/tests/latest \
