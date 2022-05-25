@@ -43,7 +43,7 @@ jobs:
           curl -sL https://bootstrap.pypa.io/get-pip.py | python3
           pip -q install virtualenv
           virtualenv azure-cli-venv
-          azure-cli-venv/bin/pip install -U pip pytest pytest-xdist wheel
+          azure-cli-venv/bin/pip install -U pip pytest pytest-xdist pytest-vcr wheel
 
       - name: Download azure-cli
         run: |
