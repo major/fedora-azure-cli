@@ -37,8 +37,9 @@ jobs:
           echo "fastestmirror=1" >> /etc/dnf/dnf.conf
           echo "max_parallel_downloads=20" >> /etc/dnf/dnf.conf
           dnf -qy upgrade
-          dnf -qy install git python3 python3-pip wget
-          pip3 -q install -U wheel pip pytest pytest-xdist
+          dnf -qy install git python3 python3-devel wget
+          curl -sL https://bootstrap.pypa.io/get-pip.py | python3
+          pip -q install -U wheel pip pytest pytest-xdist
 
       - name: Download azure-cli
         run: |
