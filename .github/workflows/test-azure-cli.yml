@@ -46,3 +46,5 @@ jobs:
       - name: Install requirements
         run: pip3 install -r azure-cli/src/azure-cli/requirements.py3.Linux.txt azure-cli/src/azure-cli*/
        
+      - name: Test
+        run: pytest azure-cli/src/azure-cli-core
