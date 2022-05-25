@@ -56,7 +56,7 @@ jobs:
           azure-cli-venv/bin/pip install azure-cli/src/azure-cli-core --no-deps
           azure-cli-venv/bin/pip install azure-cli/src/azure-cli --no-deps
           azure-cli-venv/bin/pip install azure-cli/src/azure-cli-testsdk --no-deps
-          azure-cli-venv/bin/pip -r azure-cli/src/azure-cli/requirements.py3.Linux.txt
+          azure-cli-venv/bin/pip install -r azure-cli/src/azure-cli/requirements.py3.Linux.txt
 
       - name: Run serial tests
         if: always()
@@ -69,3 +69,70 @@ jobs:
             azure-cli/src/azure-cli/azure/cli/command_modules/botservice/tests/latest \
             azure-cli/src/azure-cli/azure/cli/command_modules/cloud/tests/latest \
             azure-cli/src/azure-cli-telemetry/azure/cli/telemetry/tests
+
+      - name: Run parallel tests
+        if: always()
+        run: |
+          azure-cli-venv/bin/python -m pytest \
+            -v --boxed -p no:warnings --log-level=WARN -n 4 --durations=10 \
+            azure-cli/src/azure-cli/azure/cli/command_modules/vm/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/ams/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/sql/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/storage/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/resource/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/rdbms/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/backup/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/monitor/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/acs/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/iot/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/serviceconnector/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/servicefabric/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/netappfiles/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/acr/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/cosmosdb/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/synapse/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/appconfig/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/keyvault/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/role/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/cdn/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/hdinsight/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/search/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/aro/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/feedback/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/redis/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/sqlvm/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/apim/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/privatedns/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/databoxedge/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/batchai/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/cognitiveservices/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/eventgrid/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/eventhubs/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/servicebus/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/kusto/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/security/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/dls/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/dms/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/find/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/natgateway/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/relay/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/batch/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/billing/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/config/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/consumption/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/policyinsights/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/profile/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/reservations/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/signalr/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/container/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/dla/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/lab/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/maps/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/advisor/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/deploymentmanager/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/identity/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/managedservices/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/marketplaceordering/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/util/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/configure/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/extension/tests/latest
