@@ -24,6 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         container:
+          - registry.access.redhat.com/ubi8/ubi:latest
           - quay.io/centos/centos:stream9
           - registry.fedoraproject.org/fedora:35
           - registry.fedoraproject.org/fedora:36
@@ -68,7 +69,8 @@ jobs:
       - name: Test azure-cli command modules
         if: always()
         run: |
+          BASE_DIR=$(pwd)
           pushd azure-cli/src/azure-cli/azure/cli/command_modules/
             TEST_DIRECTORIES=$(find . -name latest -type d -printf " %p")
-            azure-cli-venv/bin/pytest $PYTEST_ARGS $TEST_DIRECTORIES
+            ${BASE_DIR}/azure-cli-venv/bin/pytest $PYTEST_ARGS $TEST_DIRECTORIES
           popd
