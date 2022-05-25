@@ -25,10 +25,9 @@ jobs:
       fail-fast: false
       matrix:
         container:
-          - registry.access.redhat.com/ubi8/ubi:latest
           - quay.io/centos/centos:stream9
-          - registry.fedoraproject.org/fedora:35
-          - registry.fedoraproject.org/fedora:36
+          # - registry.fedoraproject.org/fedora:35
+          # - registry.fedoraproject.org/fedora:36
           - registry.fedoraproject.org/fedora:rawhide
     steps:
       - name: Checkout repo
@@ -53,25 +52,20 @@ jobs:
 
       - name: Install requirements
         run: |
-          azure-cli-venv/bin/pip install \
-            -r azure-cli/src/azure-cli/requirements.py3.Linux.txt \
-            azure-cli/src/azure-cli*/
+          azure-cli-venv/bin/pip install azure-cli/src/azure-cli-telemetry --no-deps
+          azure-cli-venv/bin/pip install azure-cli/src/azure-cli-core --no-deps
+          azure-cli-venv/bin/pip install azure-cli/src/azure-cli --no-deps
+          azure-cli-venv/bin/pip install azure-cli/src/azure-cli-testsdk --no-deps
+          azure-cli-venv/bin/pip -r azure-cli/src/azure-cli/requirements.py3.Linux.txt
 
-      - name: Test azure-cli-core
+      - name: Run serial tests
         if: always()
         run: |
-          azure-cli-venv/bin/pytest $PYTEST_ARGS azure-cli/src/azure-cli-core \
-            -k "not test_get_mgmt_service_client and not test_help_loads"
-
-      - name: Test azure-cli-telemetry
-        if: always()
-        run: azure-cli-venv/bin/pytest $PYTEST_ARGS azure-cli/src/azure-cli-telemetry
-
-      - name: Test azure-cli command modules
-        if: always()
-        run: |
-          BASE_DIR=$(pwd)
-          pushd azure-cli/src/azure-cli/azure/cli/command_modules/
-            TEST_DIRECTORIES=$(find . -name latest -type d -printf " %p")
-            ${BASE_DIR}/azure-cli-venv/bin/pytest $PYTEST_ARGS $TEST_DIRECTORIES
-          popd
+          azure-cli-venv/bin/python -m pytest \
+            -v --boxed -p no:warnings --log-level=WARN --durations=10 \
+            azure-cli/src/azure-cli/azure/cli/command_modules/network/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/appservice/tests/latest \
+            azure-cli/src/azure-cli-core/azure/cli/core/tests \
+            azure-cli/src/azure-cli/azure/cli/command_modules/botservice/tests/latest \
+            azure-cli/src/azure-cli/azure/cli/command_modules/cloud/tests/latest \
+            azure-cli/src/azure-cli-telemetry/azure/cli/telemetry/tests
