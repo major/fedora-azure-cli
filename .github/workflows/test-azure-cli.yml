@@ -37,7 +37,7 @@ jobs:
           echo "fastestmirror=1" >> /etc/dnf/dnf.conf
           echo "max_parallel_downloads=20" >> /etc/dnf/dnf.conf
           dnf -qy upgrade
-          dnf -qy install python3 python3-devel
+          dnf -qy install python3
           curl -sL https://bootstrap.pypa.io/get-pip.py | python3
           pip -q install -U wheel pip pytest pytest-xdist
 
