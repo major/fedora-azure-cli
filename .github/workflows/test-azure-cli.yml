@@ -42,7 +42,7 @@ jobs:
           curl -sL https://bootstrap.pypa.io/get-pip.py | python3
           pip -q install virtualenv
           virtualenv azure-cli-venv
-          azure-cli-venv/bin/pip install -U pip pytest pytest-xdist pytest-vcr wheel
+          azure-cli-venv/bin/pip install -U pip pytest pytest-xdist wheel
 
       - name: Download azure-cli
         run: |
@@ -55,7 +55,7 @@ jobs:
           azure-cli-venv/bin/pip install azure-cli/src/azure-cli-telemetry --no-deps
           azure-cli-venv/bin/pip install azure-cli/src/azure-cli-core --no-deps
           azure-cli-venv/bin/pip install azure-cli/src/azure-cli --no-deps
-          azure-cli-venv/bin/pip install azure-cli/src/azure-cli-testsdk --no-deps
+          azure-cli-venv/bin/pip install azure-cli/src/azure-cli-testsdk
           azure-cli-venv/bin/pip install -r azure-cli/src/azure-cli/requirements.py3.Linux.txt
 
       - name: Run serial tests
