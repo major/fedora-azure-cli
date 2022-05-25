@@ -73,6 +73,5 @@ jobs:
           BASE_DIR=$(pwd)
           pushd azure-cli/src/azure-cli/azure/cli/command_modules/
             TEST_DIRECTORIES=$(find . -name latest -type d -printf " %p")
-            # ${BASE_DIR}/azure-cli-venv/bin/pytest $PYTEST_ARGS $TEST_DIRECTORIES
-            ${BASE_DIR}/azure-cli-venv/bin/pytest $PYTEST_ARGS ams/tests/latest
+            ${BASE_DIR}/azure-cli-venv/bin/pytest $PYTEST_ARGS $TEST_DIRECTORIES
           popd
