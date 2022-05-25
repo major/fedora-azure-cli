@@ -39,7 +39,9 @@ jobs:
           dnf -qy upgrade
           dnf -qy install python3
           curl -sL https://bootstrap.pypa.io/get-pip.py | python3
-          pip -q install -U wheel pip pytest pytest-xdist
+          pip -q install virtualenv
+          virtualenv azure-cli-venv
+          azure-cli-venv/bin/pip install -U pip pytest pytest-xdist wheel
 
       - name: Download azure-cli
         run: |
@@ -49,23 +51,24 @@ jobs:
 
       - name: Install requirements
         run: |
-          pip3 install -r azure-cli/src/azure-cli/requirements.py3.Linux.txt \
+          azure-cli-venv/bin/pip install \
+            -r azure-cli/src/azure-cli/requirements.py3.Linux.txt \
             azure-cli/src/azure-cli*/
 
       - name: Test azure-cli-core
         if: always()
         run: |
-          pytest $PYTEST_ARGS azure-cli/src/azure-cli-core \
+          azure-cli-venv/bin/pytest $PYTEST_ARGS azure-cli/src/azure-cli-core \
             -k "not test_get_mgmt_service_client and not test_help_loads"
 
       - name: Test azure-cli-telemetry
         if: always()
-        run: pytest $PYTEST_ARGS azure-cli/src/azure-cli-telemetry
+        run: azure-cli-venv/bin/pytest $PYTEST_ARGS azure-cli/src/azure-cli-telemetry
 
       - name: Test azure-cli command modules
         if: always()
         run: |
           pushd azure-cli/src/azure-cli/azure/cli/command_modules/
             TEST_DIRECTORIES=$(find . -name latest -type d -printf " %p")
-            pytest $PYTEST_ARGS $TEST_DIRECTORIES
+            azure-cli-venv/bin/pytest $PYTEST_ARGS $TEST_DIRECTORIES
           popd
