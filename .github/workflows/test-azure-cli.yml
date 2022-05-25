@@ -34,7 +34,7 @@ jobs:
           echo "max_parallel_downloads=20" >> /etc/dnf/dnf.conf
           dnf -y upgrade
           dnf -y install git python3 python3-pip
-          pip3 install -U wheel pip
+          pip3 install -U wheel pip pytest pytest-xdist
           
       - name: Clone azure-cli
         uses: actions/checkout@v3
@@ -47,4 +47,4 @@ jobs:
         run: pip3 install -r azure-cli/src/azure-cli/requirements.py3.Linux.txt azure-cli/src/azure-cli*/
        
       - name: Test
-        run: pytest azure-cli/src/azure-cli-core
+        run: pytest -n 4 azure-cli/src/azure-cli-core
