@@ -13,7 +13,7 @@ on:
 
 env:
   AZURE_CLI_VERSION: "2.37.0"
-  PYTEST_ARGS: "-n 8 --disable-warnings --durations 10"
+  PYTEST_ARGS: "-n 8 --disable-warnings --durations 10 --vcr-record=none"
 
 jobs:
   build:
