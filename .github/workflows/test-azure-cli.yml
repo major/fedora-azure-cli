@@ -53,7 +53,9 @@ jobs:
 
       - name: Test azure-cli-core
         if: always()
-        run: pytest $PYTEST_ARGS azure-cli/src/azure-cli-core
+        run: |
+          pytest $PYTEST_ARGS azure-cli/src/azure-cli-core \
+            -k "not test_get_mgmt_service_client and not test_help_loads"
 
       - name: Test azure-cli-telemetry
         if: always()
