@@ -11,6 +11,9 @@ on:
       - "README.md"
   workflow_dispatch:
 
+env:
+  PYTEST_ARGS: "-n 4 --disable-warnings --durations 10"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,17 +37,30 @@ jobs:
           echo "max_parallel_downloads=20" >> /etc/dnf/dnf.conf
           dnf -y upgrade
           dnf -y install git python3 python3-pip
-          pip3 install -U wheel pip pytest pytest-xdist
-          
+          pip3 install -U wheel pip pytest pytest-xdist virtualenv
+
       - name: Clone azure-cli
         uses: actions/checkout@v3
         with:
           repository: azure/azure-cli
           ref: azure-cli-2.37.0
           path: azure-cli
-          
+
       - name: Install requirements
         run: pip3 install -r azure-cli/src/azure-cli/requirements.py3.Linux.txt azure-cli/src/azure-cli*/
-       
-      - name: Test
-        run: pytest -n 4 azure-cli/src/azure-cli-core
+
+      - name: Test azure-cli-core
+        if: always()
+        run: pytest $PYTEST_ARGS azure-cli/src/azure-cli-core
+
+      - name: Test azure-cli-telemetry
+        if: always()
+        run: pytest $PYTEST_ARGS azure-cli/src/azure-cli-telemetry
+
+      - name: Test azure-cli command modules
+        if: always()
+        run: |
+          pushd src/azure-cli/azure/cli/command_modules/
+            TEST_DIRECTORIES=$(find . -name latest -type d -printf " %p")
+            pytest $PYTEST_ARGS $TEST_DIRECTORIES
+          popd
