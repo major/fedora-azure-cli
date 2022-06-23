@@ -37,11 +37,9 @@ jobs:
 
       - name: Install requirements
         run: |
-          sudo apt update
-          sudo apt -y dist-upgrade
           pip -q install virtualenv
           virtualenv azure-cli-venv
-          azure-cli-venv/bin/pip install -U pip pytest pytest-xdist setuptools wheel
+          azure-cli-venv/bin/pip install -U Cython pip pytest pytest-xdist setuptools wheel
 
       - name: Download azure-cli
         run: |
