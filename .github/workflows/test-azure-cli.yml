@@ -44,7 +44,7 @@ jobs:
           pip install -U azdev
 
       - name: Setup azdev
-        run: azdev setup -c
+        run: azdev setup -c .
         working-directory: azure-cli
 
       - name: Run serial
