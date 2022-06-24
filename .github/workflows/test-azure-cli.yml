@@ -12,10 +12,8 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_CLI_VERSION: "2.37.0"
   AZURE_TEST_RUN_LIVE: "False"
   PYTEST_ARGS: "-n 8 --disable-warnings --durations 10 --vcr-record=none"
-  YARL_NO_EXTENSIONS: 1
 
 jobs:
   test_python:
@@ -33,107 +31,22 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Display Python version
-        run: python --version
+      - name: Clone azure-cli repository
+        uses: actions/checkout@v3
+        with:
+          repository: azure/azure-cli
+          ref: azure-cli-2.37.0
+          path: azure-cli
 
       - name: Install requirements
         run: |
-          pip -q install virtualenv
-          virtualenv azure-cli-venv
-          azure-cli-venv/bin/pip install -U Cython pip pytest pytest-xdist setuptools wheel
+          pip install -U pip setuptool wheel
+          pip install -U azdev
 
-      - name: Download azure-cli
-        run: |
-           curl -sLo azure-cli.tgz https://github.com/Azure/azure-cli/archive/refs/tags/azure-cli-${AZURE_CLI_VERSION}.tar.gz
-           mkdir azure-cli
-           tar xf azure-cli.tgz --strip-components=1 -C azure-cli
+      - name: Setup azdev
+        run: azdev setup -c
+        working-directory: azure-cli
 
-      - name: Install requirements
-        run: |
-          azure-cli-venv/bin/pip install azure-cli/src/azure-cli-telemetry --no-deps
-          azure-cli-venv/bin/pip install azure-cli/src/azure-cli-core --no-deps
-          azure-cli-venv/bin/pip install azure-cli/src/azure-cli --no-deps
-          azure-cli-venv/bin/pip install azure-cli/src/azure-cli-testsdk
-          azure-cli-venv/bin/pip install -r azure-cli/src/azure-cli/requirements.py3.Linux.txt
-
-      - name: Run serial tests
-        if: always()
-        run: |
-          #!/bin/bash
-          set -euxo pipefail
-          echo $AZURE_TEST_RUN_LIVE
-          azure-cli-venv/bin/python -m pytest \
-            -v --boxed -p no:warnings --log-level=WARN --durations=10 \
-            azure-cli/src/azure-cli/azure/cli/command_modules/network/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/appservice/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/botservice/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/cloud/tests/latest
-
-      - name: Run parallel tests
-        if: always()
-        run: |
-          set -euxo pipefail
-          echo $AZURE_TEST_RUN_LIVE
-          azure-cli-venv/bin/python -m pytest \
-            -v --boxed -p no:warnings --log-level=WARN -n 8 --durations=10 \
-            azure-cli/src/azure-cli/azure/cli/command_modules/vm/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/ams/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/sql/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/storage/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/resource/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/rdbms/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/backup/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/monitor/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/acs/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/iot/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/serviceconnector/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/servicefabric/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/netappfiles/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/acr/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/cosmosdb/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/synapse/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/appconfig/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/keyvault/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/role/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/cdn/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/hdinsight/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/search/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/aro/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/feedback/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/redis/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/sqlvm/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/apim/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/privatedns/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/databoxedge/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/batchai/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/cognitiveservices/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/eventgrid/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/eventhubs/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/servicebus/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/kusto/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/security/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/dls/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/dms/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/find/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/natgateway/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/relay/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/batch/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/billing/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/config/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/consumption/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/policyinsights/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/profile/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/reservations/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/signalr/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/container/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/dla/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/lab/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/maps/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/advisor/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/deploymentmanager/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/identity/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/managedservices/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/marketplaceordering/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/util/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/configure/tests/latest \
-            azure-cli/src/azure-cli/azure/cli/command_modules/extension/tests/latest
+      - name: Run serial
+        run: azdev test --no-exitfirst --verbose --pytest-args "--durations=10"
+        working-directory: azure-cli
