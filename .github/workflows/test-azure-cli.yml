@@ -40,7 +40,7 @@ jobs:
 
       - name: Install requirements
         run: |
-          pip install -U pip setuptool wheel
+          pip install -U pip setuptools wheel
           pip install -U azdev
 
       - name: Setup azdev
